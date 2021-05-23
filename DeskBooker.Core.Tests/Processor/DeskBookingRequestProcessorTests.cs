@@ -16,6 +16,7 @@ namespace DeskBooker.Core.Processor
     }
 
     [Test]
+
     public void ShouldReturnDeskBookingResultWithRequestValues()
     {
       // Arrange
