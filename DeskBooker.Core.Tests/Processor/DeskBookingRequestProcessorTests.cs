@@ -12,6 +12,7 @@ namespace DeskBooker.Core.Processor
         private DeskBookingRequestProcessor _processor;
         private DeskBookingRequest _deskBookingRequest;
         private Mock<IDeskBookingRepository> _deskBookingRepositoryMock;
+        private Mock<IDeskRepository> _deskRepositoryMock;
 
         [SetUp]
         public void Setup()
@@ -27,7 +28,10 @@ namespace DeskBooker.Core.Processor
             };
 
             _deskBookingRepositoryMock = new Mock<IDeskBookingRepository>();
+
             _processor = new DeskBookingRequestProcessor(_deskBookingRepositoryMock.Object);
+
+            _deskRepositoryMock = new Mock<IDeskRepository>();
 
         }
 
@@ -79,6 +83,15 @@ namespace DeskBooker.Core.Processor
             Assert.AreEqual(_deskBookingRequest.LastName, savedDeskBooking.LastName);
             Assert.AreEqual(_deskBookingRequest.Email, savedDeskBooking.Email);
             Assert.AreEqual(_deskBookingRequest.Date, savedDeskBooking.Date);
+        }
+        public void ShouldNotSaveDeskBookingIfNoDeskAvailable()
+        {
+            // ARRANGE so no desk is available. 
+            _processor.BookDesk(_deskBookingRequest);
+            _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Never);
+            _deskRepositoryMock.Setup(x => x.GetAvailableDesks(_deskBookingRequest.Date));
+
+
         }
     }
 }
