@@ -34,7 +34,7 @@ namespace DeskBooker.Core.Processor
 
             _deskRepositoryMock = new Mock<IDeskRepository>();
 
-            _availableDesks = new List<Desk> { new Desk { Id = 7} };
+            _availableDesks = new List<Desk> { new Desk { Id = 7 } };
 
             _processor = new DeskBookingRequestProcessor(_deskBookingRepositoryMock.Object, _deskRepositoryMock.Object);
 
@@ -90,7 +90,7 @@ namespace DeskBooker.Core.Processor
             Assert.AreEqual(_deskBookingRequest.LastName, savedDeskBooking.LastName);
             Assert.AreEqual(_deskBookingRequest.Email, savedDeskBooking.Email);
             Assert.AreEqual(_deskBookingRequest.Date, savedDeskBooking.Date);
-            Assert.AreEqual(_availableDesks.First().Id,  savedDeskBooking.DeskId);
+            Assert.AreEqual(_availableDesks.First().Id, savedDeskBooking.DeskId);
         }
         [Test]
         public void ShouldNotSaveDeskBookingIfNoDeskAvailable()
@@ -101,12 +101,13 @@ namespace DeskBooker.Core.Processor
             _processor.BookDesk(_deskBookingRequest);
             _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Never);
         }
-
-        [Test]
-        public void ShouldReturnExpectedResultCode(DeskBookingResultCode expectedResultCode)
+        //Data driven test
+        [TestCase(DeskBookingResultCode.Success, true)]
+        [TestCase(DeskBookingResultCode.NoDeskAvailable, false)]
+        public void ShouldReturnExpectedResultCode(DeskBookingResultCode expectedResultCode, bool isDeskAvailable)
         {
 
-        }
 
+        }
     }
 }
