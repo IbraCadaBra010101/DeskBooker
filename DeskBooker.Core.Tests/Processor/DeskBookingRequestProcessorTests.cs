@@ -116,5 +116,29 @@ namespace DeskBooker.Core.Processor
             Assert.AreEqual(expectedResultCode, result.Code);
 
         }
+
+
+        [TestCase(5, true)]
+        [TestCase(null, false)]
+        public void ShouldReturnExpectedDeskBookingId(
+     int? expectedDeskBookingId, bool isDeskAvailable)
+        {
+            if (!isDeskAvailable)
+            {
+                _availableDesks.Clear();
+            }
+            else
+            {
+                _deskBookingRepositoryMock.Setup(x => x.Save(It.IsAny<DeskBooking>()))
+                  .Callback<DeskBooking>(deskBooking =>
+                  {
+                      deskBooking.Id = expectedDeskBookingId.Value;
+                  });
+            }
+
+            var result = _processor.BookDesk(_deskBookingRequest);
+
+            Assert.AreEqual(expectedDeskBookingId, result.DeskBookingId);
+        }
     }
 }
