@@ -106,7 +106,14 @@ namespace DeskBooker.Core.Processor
         [TestCase(DeskBookingResultCode.NoDeskAvailable, false)]
         public void ShouldReturnExpectedResultCode(DeskBookingResultCode expectedResultCode, bool isDeskAvailable)
         {
+            // Arrange that if the variable is false make sure the list of desks is empty
+            if (!isDeskAvailable)
+            {
+                _availableDesks.Clear();
+            }
 
+            var result = _processor.BookDesk(_deskBookingRequest);
+            Assert.AreEqual(expectedResultCode, result.Code);
 
         }
     }
