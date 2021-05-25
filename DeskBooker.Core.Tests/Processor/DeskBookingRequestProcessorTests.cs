@@ -3,6 +3,8 @@ using DeskBooker.Core.Domain;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DeskBooker.Core.Processor
 {
@@ -13,6 +15,7 @@ namespace DeskBooker.Core.Processor
         private DeskBookingRequest _deskBookingRequest;
         private Mock<IDeskBookingRepository> _deskBookingRepositoryMock;
         private Mock<IDeskRepository> _deskRepositoryMock;
+        private List<Desk> _availableDesks;
 
         [SetUp]
         public void Setup()
@@ -29,9 +32,13 @@ namespace DeskBooker.Core.Processor
 
             _deskBookingRepositoryMock = new Mock<IDeskBookingRepository>();
 
-            _processor = new DeskBookingRequestProcessor(_deskBookingRepositoryMock.Object);
-
             _deskRepositoryMock = new Mock<IDeskRepository>();
+
+            _availableDesks = new List<Desk> { new Desk { Id = 7} };
+
+            _processor = new DeskBookingRequestProcessor(_deskBookingRepositoryMock.Object, _deskRepositoryMock.Object);
+
+            _deskRepositoryMock.Setup(x => x.GetAvailableDesks(_deskBookingRequest.Date)).Returns(_availableDesks);
 
         }
 
@@ -83,15 +90,23 @@ namespace DeskBooker.Core.Processor
             Assert.AreEqual(_deskBookingRequest.LastName, savedDeskBooking.LastName);
             Assert.AreEqual(_deskBookingRequest.Email, savedDeskBooking.Email);
             Assert.AreEqual(_deskBookingRequest.Date, savedDeskBooking.Date);
+            Assert.AreEqual(_availableDesks.First().Id,  savedDeskBooking.DeskId);
         }
+        [Test]
         public void ShouldNotSaveDeskBookingIfNoDeskAvailable()
         {
             // ARRANGE so no desk is available. 
+            _availableDesks.Clear();
+
             _processor.BookDesk(_deskBookingRequest);
             _deskBookingRepositoryMock.Verify(x => x.Save(It.IsAny<DeskBooking>()), Times.Never);
-            _deskRepositoryMock.Setup(x => x.GetAvailableDesks(_deskBookingRequest.Date));
+        }
 
+        [Test]
+        public void ShouldReturnExpectedResultCode(DeskBookingResultCode expectedResultCode)
+        {
 
         }
+
     }
 }
