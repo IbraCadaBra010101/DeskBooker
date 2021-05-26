@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeskBooker.Core.Domain
+﻿namespace DeskBooker.Core.Domain
 {
-    public enum DeskBookingResultCode
-    {
-        Success, NoDeskAvailable 
-    }
+  public enum DeskBookingResultCode
+  {
+    Success,
+    NoDeskAvailable
+  }
 }
